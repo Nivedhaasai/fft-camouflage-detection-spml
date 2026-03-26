@@ -1,54 +1,69 @@
-Camouflage Detection with FFT Texture Features
+# FFT-Based Camouflage Detection (SPML Academic Prototype)
 
 Overview
-This project provides a complete signal-processing + classical machine learning pipeline for detecting camouflaged regions using FFT-based frequency-domain texture analysis.
+This project provides an academic-quality signal-processing and classical machine learning pipeline for detecting camouflaged regions using **Multi-Scale FFT** and **Gabor Texture Features**. It avoids deep learning, focusing on frequency-domain analysis and texture-based discrimination.
 
-Data layout
-Expected directory structure:
-- dataset/camo
-- dataset/non_camo
-- masks
+---
 
-Mask matching rule:
-- Every image in dataset/camo must have a mask with the same filename stem in masks.
-- Images in dataset/non_camo are treated as background-only samples.
+## ?? Key Improvements (v2.0)
+- **Multi-Scale Feature Fusion**: Concatenates features from 32x32, 64x64, and 96x96 patch scales.
+- **Enhanced Feature Vector (81-Dim)**:
+  - **FFT Features**: Mean/Std energy, Shannon entropy, High/Mid frequency ratios, 16 Radial profile bins, and Directional energy.
+  - **Gabor Features**: Mean energy from 4 orientations (0°, 45°, 90°, 135°).
+- **Deterministic Pipeline**: Unified configuration in `src/config.py` with `RANDOM_SEED=42`.
+- **Balanced Subsampling**: Training is limited to 40,000 patches (20k Camo / 20k Background) for optimal speed and class balance.
+- **Academic Visualization**: Provides a 4-panel output including Original Image, FFT Spectrum, Probability Heatmap, and Bounding Box Detections.
 
-Method
-1. Split images into 64x64 patches.
-2. Auto-label camo patches using mask_patch mean intensity:
-   - mean > 0.1 -> camouflage
-   - otherwise -> background
-3. Label all non_camo patches as background.
-3. Compute FFT patch features:
-   - Mean spectral energy
-   - Standard deviation
-   - Shannon entropy
-   - High-frequency energy ratio
-   - Radial frequency distribution
-   - Horizontal directional energy
-   - Vertical directional energy
-4. Normalize features using StandardScaler.
-5. Train an SVM classifier with RBF kernel.
-6. Predict camouflage patches and generate probability heatmaps.
+---
 
-Setup
-1. Create and activate a Python environment.
+## ?? Dataset Structure
+```text
+dataset/camo/       # Camouflage images
+dataset/non_camo/   # Background-only images
+masks/              # Binary masks for camo images (matching filenames)
+```
+- **Verification**: The training script automatically verifies that every camo image has a matching mask in the `masks/` folder.
+
+---
+
+## ??? Installation
+1. Create and activate a virtual environment:
+   ```bash
+   python -m venv .venv
+   .\.venv\Scripts\activate  # Windows
+   ```
 2. Install dependencies:
+   ```bash
    pip install -r requirements.txt
+   ```
 
-Training
-Run:
+---
+
+## ??? Training
+To retrain the SVM classifier with the upgraded feature pipeline:
+```bash
 python train_fft_camouflage.py
+```
+- **Output**: Generates `models/svm_fft_camouflage_model.joblib`.
+- **Metrics**: Prints Accuracy, Precision, Recall, F1-score, and Confusion Matrix.
 
-Model artifact:
-- models/svm_fft_camouflage_model.joblib
+---
 
-Inference
-Run:
-python predict_camouflage_map.py --image dataset/camo/<your_image>.jpg --output outputs/<your_image>_pred.png
+## ?? Inference & Visualization
+Run the detection on a test image:
+```bash
+python predict_camouflage_map.py --image "dataset/camo/camourflage_00001.jpg" --output "outputs/prediction_v2.png"
+```
+The output visualization includes:
+1. **Original Image**
+2. **FFT Magnitude Spectrum** (Center patch)
+3. **Probability Heatmap** (Gaussian-smoothed)
+4. **Camouflage Overlay** (Bounding boxes filtered by `CAMO_PROB_THRESHOLD`)
 
-Inference output includes:
-- original image
-- FFT magnitude spectrum
-- probability heatmap
-- detected camouflage overlay with bounding boxes
+---
+
+## ?? Configuration
+Modify `src/config.py` to tune the system:
+- `PATCH_SIZE`: Base patch scale.
+- `STRIDE`: Overlap for sliding window.
+- `CAMO_PROB_THRESHOLD`: Sensitivity for bounding box generation.
