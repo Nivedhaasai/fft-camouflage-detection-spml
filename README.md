@@ -1,12 +1,12 @@
 # Multi-Scale Texture Fusion for Camouflage Detection
 ## Frequency-Domain Analysis & Log-Polar Spectral Pooling
 
-This project implements a robust, non-deep-learning approach to camouflage detection. Instead of relying on data-hungry neural networks, it leverages classical computer vision and signal processing—specifically **Fast Fourier Transforms (FFT)**, **Gabor Filter Banks**, and **Local Binary Patterns (LBP)**—to identify regions where the background texture has been disrupted by a foreground object.
+This project implements a robust, non-deep-learning approach to camouflage detection. Instead of relying on data-hungry neural networks, it leverages classical computer vision and signal processingâ€”specifically **Fast Fourier Transforms (FFT)**, **Gabor Filter Banks**, and **Local Binary Patterns (LBP)**â€”to identify regions where the background texture has been disrupted by a foreground object.
 
 ### The Problem: Why FFT for Camouflage?
-Camouflage works by matching the dominant features (color, orientation, and spatial frequency) of the environment. However, an object—even if perfectly color-matched—rarely matches the exact *periodic* structure of the background. 
+Camouflage works by matching the dominant features (color, orientation, and spatial frequency) of the environment. However, an objectâ€”even if perfectly color-matchedâ€”rarely matches the exact *periodic* structure of the background. 
 - **What is FFT?** The Fast Fourier Transform decomposes an image into its constituent frequencies. While a natural background (like grass or rocks) has a specific statistical regularity in the frequency domain, a physical object introduces "edge noise" and phase shifts that show up as distinct patterns in the 2D power spectrum. 
-- **Log-Polar Spectral Pooling:** By dividing the FFT power spectrum into 8 angular sectors (orientations) and 4 radial bands (frequencies), we create a "fingerprint" of the texture that is invariant to slight rotations—allowing us to detect the "off-beat" signature of a camouflaged animal or object.
+- **Log-Polar Spectral Pooling:** By dividing the FFT power spectrum into 8 angular sectors (orientations) and 4 radial bands (frequencies), we create a "fingerprint" of the texture that is invariant to slight rotationsâ€”allowing us to detect the "off-beat" signature of a camouflaged animal or object.
 
 ---
 
@@ -53,4 +53,4 @@ python predict_camouflage_map.py
 ```
 
 ---
-*Developed as a study in Classical Machine Learning & Signal Processing.*
+*Developed for course project for Signal Processing for Machine Learning.*
